@@ -1,0 +1,6 @@
+name: megumi
+version: 1.0-SNAPSHOT
+main: moe.nanakura.megumi.MegumiPlugin
+api-version: '1.21'
+author: nanakura
+description: Axuint SMP Essential Plugin
