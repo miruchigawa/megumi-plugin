@@ -7,6 +7,10 @@ junit-jupiter-engine = "5.12.1"
 shadow = "9.3.0"
 ktor = "3.0.3"
 kotlin-serialization = "1.7.3"
+hikaricp = "6.2.1"
+sqlite-jdbc = "3.48.0.0"
+luckperms = "5.4"
+
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -16,6 +20,10 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
+luckperms = { module = "net.luckperms:api", version.ref = "luckperms" }
+
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.2.20" }
