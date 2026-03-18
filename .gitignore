@@ -6,3 +6,4 @@ build
 
 # Ignore Kotlin plugin data
 .kotlin
+kls_database.db
