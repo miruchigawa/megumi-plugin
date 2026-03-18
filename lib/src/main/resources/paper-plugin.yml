@@ -4,29 +4,3 @@ main: moe.nanakura.megumi.MegumiPlugin
 api-version: '1.21'
 author: nanakura
 description: Axuint SMP Essential Plugin
-
-dependencies:
-  server:
-    LuckPerms:
-      load: BEFORE
-      required: false
-
-permissions:
-  teleportx.use:
-    description: Access to /sp and /tpx
-    default: true
-  teleportx.group.supporter:
-    description: Supporter tier limits
-    default: op
-  teleportx.group.admin:
-    description: Admin tier limits
-    default: op
-  teleportx.group.developer:
-    description: Developer tier limits
-    default: op
-  teleportx.bypass:
-    description: Bypass all teleport limits
-    default: op
-  teleportx.admin:
-    description: Access to /tpxadmin commands
-    default: op

@@ -6,5 +6,3 @@ build
 
 # Ignore Kotlin plugin data
 .kotlin
-
-test-*

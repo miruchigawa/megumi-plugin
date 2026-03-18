@@ -1,13 +1,13 @@
 # Contributing to Megumi
 
-We appreciate your help improving Megumi.
+Welcome! We're glad you're interested in helping improve Megumi. This project is a volunteer effort and we appreciate your contributions.
 
 ## Ways to Contribute
 
-- **Report Bugs**: Let us know if something breaks.
-- **Suggest Features**: Help us improve the plugin.
-- **Docs**: Fix typos or clarify steps.
-- **Code**: Fix bugs or add features.
+- **Reporting Bugs**: Found something that doesn't work? Let us know!
+- **Suggesting Features**: Have an idea to make the plugin better?
+- **Improving Documentation**: Fix typos or clarify instructions.
+- **Submitting Code**: Fix bugs or implement new features.
 
 ## Development Setup
 
@@ -60,4 +60,4 @@ Examples:
 
 - Breaking changes without prior discussion.
 - Refactorings that only change style without improving performance or readability.
-- Features that are outside the scope of Core Essentials or Trakteer.id integration.
+- Features that are outside the scope of Trakteer.id integration.
