@@ -12,17 +12,22 @@ class MegumiPlugin : JavaPlugin() {
     override fun onEnable() {
         saveDefaultConfig()
         val apiKey = config.getString("trakteer.api-key") ?: ""
-        
+
         if (apiKey.isEmpty() || apiKey == "YOUR_API_KEY_HERE") {
             logger.warning("Trakteer API key is not set in config.yml! Plugin will not function correctly.")
         }
 
         trakteerClient = TrakteerClient(apiKey)
 
-        val manager = lifecycleManager
-        manager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             val commands = event.registrar()
-            commands.register("supporter", "View Trakteer supporters", SupporterCommand(trakteerClient))
+
+            val supporterCommand = SupporterCommand(trakteerClient)
+
+            commands.register(
+                supporterCommand.build(),
+                "View Trakteer supporters"
+            )
         }
 
         server.pluginManager.registerEvents(JoinListener(trakteerClient, logger), this)

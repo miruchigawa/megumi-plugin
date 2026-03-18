@@ -1,6 +1,8 @@
 package moe.nanakura.megumi.commands
 
-import io.papermc.paper.command.brigadier.BasicCommand
+import com.mojang.brigadier.tree.LiteralCommandNode
+import com.mojang.brigadier.arguments.IntegerArgumentType
+import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,32 +11,55 @@ import moe.nanakura.megumi.trakteer.TrakteerClient
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.entity.Player
 
-class SupporterCommand(private val client: TrakteerClient) : BasicCommand {
+class SupporterCommand(private val client: TrakteerClient) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    override fun execute(source: CommandSourceStack, args: Array<out String>) {
-        val page = args.firstOrNull()?.toIntOrNull() ?: 1
-        
-        if (page < 1) {
-            source.sender.sendMessage(Component.text("Page must be at least 1.", NamedTextColor.RED))
-            return
-        }
-        
+
+    fun build(): LiteralCommandNode<CommandSourceStack> {
+        return Commands.literal("supporter")
+            .then(Commands.argument("page", IntegerArgumentType.integer(1))
+                .executes { context ->
+                    val player = context.source.sender as Player
+                    val page = context.getArgument("page", Int::class.java)
+
+                    handle(player, page)
+                    1
+                })
+            .executes { context ->
+                val player = context.source.sender as Player
+
+                handle(player)
+                1
+            }
+            .build()
+    }
+
+    private fun handle(player: Player, page: Int = 1) {
         scope.launch {
             try {
-                val includes = "is_guest,reply_message,net_amount,payment_method,order_id,supporter_email,updated_at_diff_label"
+                val includes =
+                    "is_guest,reply_message,net_amount,payment_method,order_id,supporter_email,updated_at_diff_label"
                 val response = client.getSupports(limit = 5, page = page, include = includes)
                 if (response.status == "success") {
                     val supports = response.result.data
-                    
+
                     if (supports.isEmpty()) {
-                        source.sender.sendMessage(Component.text("No supporters found on page $page.", NamedTextColor.RED))
+                        player.sendMessage(
+                            Component.text(
+                                "No supporters found on page $page.",
+                                NamedTextColor.RED
+                            )
+                        )
                         return@launch
                     }
 
-                    source.sender.sendMessage(
-                        Component.text("=== Trakteer Supporters (Page $page) ===", NamedTextColor.GOLD)
+                    player.sendMessage(
+                        Component.text(
+                                "=== Trakteer Supporters (Page $page) ===",
+                                NamedTextColor.GOLD
+                            )
                             .decoration(TextDecoration.BOLD, true)
                     )
 
@@ -43,41 +68,79 @@ class SupporterCommand(private val client: TrakteerClient) : BasicCommand {
                         val quantity = support.quantity ?: 0
                         val unit = support.unitName ?: "Units"
                         val amount = support.amount ?: 0
-                        
-                        val line = Component.text()
-                            .append(Component.text(supporter, NamedTextColor.AQUA))
-                            .append(Component.text(" supported ", NamedTextColor.WHITE))
-                            .append(Component.text("$quantity $unit", NamedTextColor.GREEN))
-                            .append(Component.text(" ($amount IDR)", NamedTextColor.GRAY))
-                        
+
+                        val line =
+                            Component.text()
+                                .append(Component.text(supporter, NamedTextColor.AQUA))
+                                .append(Component.text(" supported ", NamedTextColor.WHITE))
+                                .append(
+                                    Component.text(
+                                        "$quantity $unit",
+                                        NamedTextColor.GREEN
+                                    )
+                                )
+                                .append(
+                                    Component.text(
+                                        " ($amount IDR)",
+                                        NamedTextColor.GRAY
+                                    )
+                                )
+
                         if (support.paymentMethod != null) {
                             line.append(Component.text(" via ", NamedTextColor.GRAY))
-                                .append(Component.text(support.paymentMethod, NamedTextColor.LIGHT_PURPLE))
+                                .append(
+                                    Component.text(
+                                        support.paymentMethod,
+                                        NamedTextColor.LIGHT_PURPLE
+                                    )
+                                )
                         }
 
-                        source.sender.sendMessage(line.build())
-                        
+                        player.sendMessage(line.build())
+
                         if (support.orderId != null) {
-                            source.sender.sendMessage(Component.text("  Order ID: ${support.orderId}", NamedTextColor.DARK_GRAY))
+                            player.sendMessage(
+                                Component.text(
+                                    "  Order ID: ${support.orderId}",
+                                    NamedTextColor.DARK_GRAY
+                                )
+                            )
                         }
-                        
+
                         if (!support.supportMessage.isNullOrBlank()) {
-                            // Sanitize message to remove newlines which can crash some chat renderers
-                            val sanitizedMessage = support.supportMessage.replace("\n", " ").replace("\r", " ")
-                            source.sender.sendMessage(
-                                Component.text("  \"$sanitizedMessage\"", NamedTextColor.LIGHT_PURPLE)
+                            // Sanitize: remove newlines to prevent chat
+                            // rendering issues
+                            val sanitizedMessage =
+                                support.supportMessage.replace("\n", " ").replace("\r", " ")
+                            player.sendMessage(
+                                Component.text(
+                                        "  \"$sanitizedMessage\"",
+                                        NamedTextColor.LIGHT_PURPLE
+                                    )
                                     .decoration(TextDecoration.ITALIC, true)
                             )
                         }
                     }
-                    
-                    source.sender.sendMessage(Component.text("Type /supporter ${page + 1} for more.", NamedTextColor.GRAY))
+
+                    player.sendMessage(
+                        Component.text(
+                            "Type /supporter ${page + 1} for more.",
+                            NamedTextColor.GRAY
+                        )
+                    )
                 } else {
-                    source.sender.sendMessage(Component.text("Failed to fetch supporters: ${response.message}", NamedTextColor.RED))
+                    player.sendMessage(
+                        Component.text(
+                            "Failed to fetch supporters: ${response.message}",
+                            NamedTextColor.RED
+                        )
+                    )
                 }
-            } catch (e: Exception) {
-                source.sender.sendMessage(Component.text("An error occurred: ${e.message}", NamedTextColor.RED))
-                e.printStackTrace()
+            } catch (ex: Exception) {
+                player.sendMessage(
+                    Component.text("An error occurred: ${ex.message}", NamedTextColor.RED)
+                )
+                ex.printStackTrace()
             }
         }
     }

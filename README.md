@@ -17,7 +17,7 @@ An essential Minecraft Paper plugin for the **Axuint SMP** server that integrate
 ## Installation
 
 1. Clone the repository and build the plugin using Gradle (see [Development](#development)).
-2. Place the generated jar file (from `lib/build/libs/megumi-all.jar`) into your server's `plugins` directory.
+2. Place the generated jar file (from `lib/build/libs/lib-all.jar`) into your server's `plugins` directory.
 3. Restart the server to generate the default configuration.
 4. Edit `plugins/megumi/config.yml` and add your Trakteer API key.
 5. Restart or reload the plugin to apply changes.
